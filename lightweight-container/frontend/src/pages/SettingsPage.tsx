@@ -127,6 +127,10 @@ export default function SettingsPage() {
               </div>
             </div>
           </div>
+          <div className="mt-4">
+            <p className="text-xs text-gray-500 mb-2 font-medium">Filesystem Isolation</p>
+            <Chip ok={!!info.fs_isolation} label={info.fs_isolation ? 'pivot_root active' : 'Not implemented'} />
+          </div>
         </div>
       )}
 
@@ -137,8 +141,8 @@ export default function SettingsPage() {
           <li>PID, UTS and Mount namespaces: implemented via <code>clone()</code> with <code>CLONE_NEWPID | CLONE_NEWUTS | CLONE_NEWNS</code></li>
           <li>CPU limits: enforced by writing to <code>cpu.max</code> in the cgroups v2 hierarchy</li>
           <li>Memory limits: enforced by writing to <code>memory.max</code></li>
+          <li>Full filesystem isolation: implemented via <code>pivot_root</code> with read-only host mounts</li>
           <li>Network namespace isolation: not implemented</li>
-          <li>Full filesystem isolation (chroot/pivot_root): not implemented</li>
           <li>This is an academic prototype — not a production-grade sandbox</li>
         </ul>
       </div>

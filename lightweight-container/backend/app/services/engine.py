@@ -246,6 +246,7 @@ def system_info() -> dict:
         "mock_mode": not IS_LINUX,
         "cgroups_v2": False,
         "namespaces": [],
+        "fs_isolation": True,
     }
 
     if IS_LINUX:

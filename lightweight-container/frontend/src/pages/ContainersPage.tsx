@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
-import { Search, Play, StopCircle, Trash2, RefreshCw, AlertTriangle } from 'lucide-react'
+import { Search, Play, StopCircle, Trash2, RefreshCw, AlertTriangle, Terminal } from 'lucide-react'
 import { useContainers } from '../hooks/useContainers'
 import StatusBadge from '../components/StatusBadge'
 import { startContainer, stopContainer, removeContainer } from '../services/api'
 import toast from 'react-hot-toast'
+import LiveTerminalModal from '../components/LiveTerminalModal'
 
 export default function ContainersPage() {
   const { containers, loading, error, refresh } = useContainers(5000)
   const [search, setSearch] = useState('')
   const [busy, setBusy] = useState<string | null>(null)
   const [confirm, setConfirm] = useState<{ name: string; action: 'stop' | 'remove' } | null>(null)
+  const [terminalContainer, setTerminalContainer] = useState<string | null>(null)
 
   const filtered = containers.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase())
@@ -101,6 +103,12 @@ export default function ContainersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
+                      <button
+                        className="btn bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs px-2.5 py-1"
+                        onClick={() => setTerminalContainer(c.name)}
+                      >
+                        <Terminal size={12} /> Logs
+                      </button>
                       {c.state === 'STOPPED' && (
                         <button
                           disabled={busy === c.name}
@@ -136,6 +144,13 @@ export default function ContainersPage() {
           </table>
         )}
       </div>
+
+      {terminalContainer && (
+        <LiveTerminalModal 
+          containerName={terminalContainer} 
+          onClose={() => setTerminalContainer(null)} 
+        />
+      )}
 
       {/* Confirmation dialog */}
       {confirm && (

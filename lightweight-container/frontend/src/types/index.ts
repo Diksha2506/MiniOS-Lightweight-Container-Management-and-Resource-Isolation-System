@@ -26,6 +26,7 @@ export interface SystemInfo {
   namespaces: string[]
   mem_total_bytes?: number
   mem_available_bytes?: number
+  fs_isolation?: boolean
 }
 
 export interface ApiResponse {

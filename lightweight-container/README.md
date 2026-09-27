@@ -54,8 +54,26 @@ Navigate to the provided localhost URL (usually `http://localhost:5173`) in your
 - **Resource Monitoring**: Track CPU and Memory usage dynamically using interactive charts.
 - **OS Concepts Lab**: A sandbox environment to test process isolation, memory limits, and CPU constraints visually.
 
+## Testing (Phase 4)
+We have comprehensive automated testing for both the API layer and the underlying Linux OS isolation layer.
+
+### Running API Tests (Cross-Platform)
+The FastAPI backend can be tested on any OS (including Windows) since it falls back to mock mode gracefully.
+```bash
+cd backend
+pip install pytest httpx
+pytest tests/ -v
+```
+
+### Running Linux Integration Tests
+These tests verify that PID, UTS, filesystem (`pivot_root`), and resource limits actually work via the kernel. **These must be run on Ubuntu Linux as root.**
+```bash
+make
+sudo ./tests/test_lifecycle.sh
+sudo ./tests/test_fs_isolation.sh
+```
+
 ## Limitations & Security Notice
 - This is an academic learning prototype. It is **NOT secure** for production workloads.
-- Does not implement full filesystem isolation (chroot/pivot_root are minimal).
-- API is restricted to predefined subcommands (`create`, `start`, `stop`, `remove`, `stats`, `list`) to prevent arbitrary host command execution.
+- API is restricted to predefined subcommands (`create`, `start`, `stop`, `remove`, `stats`, `list`) to prevent arbitrary host command execution. Path traversal protections are enabled.
 - Relies on cgroups v2. Will fail on older systems using cgroups v1.

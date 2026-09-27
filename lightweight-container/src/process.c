@@ -18,6 +18,16 @@ struct child_args {
 static int child_process(void *arg) {
     struct child_args *args = (struct child_args *)arg;
     
+    // Redirect stdout and stderr to a log file
+    char log_path[256];
+    snprintf(log_path, sizeof(log_path), "/tmp/containers/%s.log", args->c->name);
+    FILE *log_file = fopen(log_path, "w");
+    if (log_file) {
+        dup2(fileno(log_file), STDOUT_FILENO);
+        dup2(fileno(log_file), STDERR_FILENO);
+        fclose(log_file);
+    }
+
     // Setup namespaces
     if (namespace_setup(args->c->name) != 0) {
         fprintf(stderr, "Namespace setup failed\n");

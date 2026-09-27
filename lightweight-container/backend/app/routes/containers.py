@@ -67,3 +67,48 @@ def api_remove(name: str):
 def api_stats(name: str):
     data = get_stats(name)
     return StatsResponse(name=name, **data)
+
+
+import asyncio
+import os
+from fastapi import WebSocket, WebSocketDisconnect
+
+@router.websocket("/{name}/logs")
+async def websocket_logs(websocket: WebSocket, name: str):
+    await websocket.accept()
+    
+    # Prevent path traversal
+    if not name or "/" in name or ".." in name or not name.replace("-", "").replace("_", "").isalnum():
+        await websocket.send_text("Error: Invalid container name.\n")
+        await websocket.close()
+        return
+
+    log_path = f"/tmp/containers/{name}.log"
+    
+    try:
+        # Mock mode fallback for Windows/Mac
+        if os.name != 'posix':
+            for i in range(10):
+                await websocket.send_text(f"[Mock Log] Container {name} is running - tick {i}\n")
+                await asyncio.sleep(2)
+            await websocket.close()
+            return
+
+        # Real Linux mode: tail the file
+        if not os.path.exists(log_path):
+            await websocket.send_text(f"Waiting for log file: {log_path}...\n")
+            while not os.path.exists(log_path):
+                await asyncio.sleep(0.5)
+
+        with open(log_path, "r") as f:
+            while True:
+                line = f.readline()
+                if not line:
+                    await asyncio.sleep(0.2)
+                    continue
+                await websocket.send_text(line)
+
+    except WebSocketDisconnect:
+        pass
+    except Exception as e:
+        await websocket.send_text(f"Error reading logs: {str(e)}\n")
