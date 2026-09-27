@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { @apply border-gray-200; }
+  body { @apply bg-gray-50 text-gray-900 font-sans; }
+}
+
+@layer components {
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-navy-700 transition-all duration-150;
+  }
+  .nav-link.active {
+    @apply text-white bg-navy-700;
+  }
+  .card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-blue-600 text-white hover:bg-blue-700;
+  }
+  .btn-danger {
+    @apply btn bg-red-500 text-white hover:bg-red-600;
+  }
+  .btn-ghost {
+    @apply btn border border-gray-300 text-gray-700 hover:bg-gray-100;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold;
+  }
+  .badge-running {
+    @apply badge bg-emerald-100 text-emerald-700;
+  }
+  .badge-stopped {
+    @apply badge bg-gray-100 text-gray-500;
+  }
+  .input {
+    @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  }
+}
+
+/* Smooth chart animations */
+.recharts-line-curve { transition: d 0.3s ease; }
