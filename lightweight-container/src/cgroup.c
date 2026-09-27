@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "cgroup.h"
+#include <errno.h>
 
 #define CGROUP_BASE "/sys/fs/cgroup"
 #define PROJECT_CGROUP \
@@ -26,14 +27,19 @@ static int write_to_cgroup_file(const char *path, const char *value) {
 }
 
 int cgroup_create(const char *container_name) {
-    mkdir(PROJECT_CGROUP, 0755); // Ensure base cgroup exists
-    
+    if (mkdir(PROJECT_CGROUP, 0755) != 0 && errno != EEXIST) {
+        perror("mkdir project cgroup");
+        return -1;
+    }
+
     char path[256];
     snprintf(path, sizeof(path), "%s/%s", PROJECT_CGROUP, container_name);
-    
+
     if (mkdir(path, 0755) != 0) {
-        // It might already exist, which is fine
+        perror("mkdir container cgroup");
+        return -1;
     }
+
     return 0;
 }
 

@@ -77,9 +77,24 @@ int container_start(const char *name) {
         return 1;
     }
 
-    cgroup_create(c.name);
-    if (c.memory_limit_mb > 0) cgroup_set_memory_limit(c.name, c.memory_limit_mb);
-    if (c.cpu_limit_pct > 0) cgroup_set_cpu_limit(c.name, c.cpu_limit_pct);
+    if (cgroup_create(c.name) != 0) {
+    fprintf(stderr, "Failed to create cgroup.\n");
+    return 1;
+    }
+
+    if (c.memory_limit_mb > 0 &&
+        cgroup_set_memory_limit(c.name, c.memory_limit_mb) != 0) {
+        fprintf(stderr, "Failed to set memory limit.\n");
+        cgroup_remove(c.name);
+        return 1;
+    }
+
+    if (c.cpu_limit_pct > 0 &&
+        cgroup_set_cpu_limit(c.name, c.cpu_limit_pct) != 0) {
+        fprintf(stderr, "Failed to set CPU limit.\n");
+        cgroup_remove(c.name);
+        return 1;
+    }
 
     pid_t pid = process_start_isolated(&c);
     if (pid < 0) {
