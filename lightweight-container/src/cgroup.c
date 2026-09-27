@@ -7,7 +7,8 @@
 #include "cgroup.h"
 
 #define CGROUP_BASE "/sys/fs/cgroup"
-#define PROJECT_CGROUP CGROUP_BASE "/lightweight-containers"
+#define PROJECT_CGROUP \
+    CGROUP_BASE "/user.slice/user-1000.slice/user@1000.service/lightweight-containers"
 
 static int write_to_cgroup_file(const char *path, const char *value) {
     FILE *f = fopen(path, "w");
